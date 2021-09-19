@@ -31,7 +31,7 @@ void MessageQueue<T>::send(T &&msg)
 
     std::lock_guard<std::mutex> uLock(_mutex);
 
-    _messages.push_back(std::move(msg));
+    _messages.emplace_back(msg);
     _cond.notify_one(); // notify client after pushing new message into vector
 }
 
@@ -78,10 +78,8 @@ void TrafficLight::cycleThroughPhases()
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
 
     // initalize variables
-    bool hasEnteredIntersection = false;
-
-    std::random_device seeder;
-	std::mt19937 eng(seeder());
+    static std::random_device seeder;
+	static std::mt19937 eng(seeder());
 	std::uniform_int_distribution<int> dist(4000, 6000);
 	auto gen = std::bind(dist, eng);
     int cycleDuration = gen(); // duration of a single simulation cycle in ms
